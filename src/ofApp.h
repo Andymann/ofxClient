@@ -2,6 +2,8 @@
 
 #include "ofMain.h"
 #include "pixelClient.h"
+#include "ofxDatGui.h"
+#include "ofxXmlSettings.h"
 
 class ofApp : public ofBaseApp{
 
@@ -21,10 +23,35 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+        void exit();
+    
+    void setupGui();
+    void onButtonEvent(ofxDatGuiButtonEvent e);
+    void onTextInputEvent(ofxDatGuiTextInputEvent e);
+    
+    ofxXmlSettings xmlSettings;
+    void readSettings();
+    void saveSettings();
     
     pixelClient client;
     ofTexture tex;
     
     bool pixelsLoaded;
-		
+    
+    ofTrueTypeFont font;
+    ofxDatGui* gui;
+    ofxDatGuiTextInput* txtNetwork;
+    ofxDatGuiButton* btnSetNetwork;
+        
 };
+
+class myCustomTheme : public ofxDatGuiTheme{
+public:
+    myCustomTheme(){
+        font.size = 12;
+        //font.file = "path/to/font.ttf";
+        init();
+    }
+};
+
+

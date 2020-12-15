@@ -12,7 +12,7 @@
 #include "ofxNetwork.h"
 #include "ofMain.h"
 
-//#define NUM_BYTES_IN_IMG (320 * 240 * 3)
+
 
 enum clientState{
     NONE, READY, RECEIVING, COMPLETE, FAULTY
@@ -123,7 +123,8 @@ class pixelClient{
                 //ofLogNotice("received correct headerdata");
                 
                 iMESSAGESIZE = bufHeader[3]*1000;
-                
+                iWidth = (bufHeader[5]<<8) + bufHeader[4];
+                iHeight = (bufHeader[9]<<8) + bufHeader[8];
                 pixels.clear();
                 totalBytes=(bufHeader[15]<<24) +
                 (bufHeader[14]<<16) +
@@ -178,8 +179,8 @@ class pixelClient{
         //for(int i=0; i<iImagesizeFromHeaderData; i++){
         //    tmpBuff[i] = *&bufImg[i+iStartOfImage];
         //}
-        //if((char)pixels[totalBytes-1]=='\xD9'){
-        if((char)pixels[1]=='\xD8'){
+        if((char)pixels[totalBytes-1]=='\xD9'){
+        //if((char)pixels[1]=='\xD8'){
             
             char tmpBuff[ totalBytes ];
             std::copy(&pixels[0], &pixels[totalBytes], tmpBuff);
@@ -190,7 +191,7 @@ class pixelClient{
             buf.set((tmpBuff), totalBytes);
            //buf.set(*(tmpBuff), totalBytes);
             
-            imgReceived.allocate(640, 480, OF_IMAGE_COLOR);
+            imgReceived.allocate(iWidth, iHeight, OF_IMAGE_COLOR);
            //imgReceived.load(buf);
             ofLoadImage(imgReceived, buf);
             
@@ -232,6 +233,8 @@ class pixelClient{
     int bytesRecieved;
     int totalBytes;
     int iMESSAGESIZE = 10000;
+    int iWidth;
+    int iHeight;
     
     ofxTCPClient tcpClient;
     vector<unsigned char>pixels;
